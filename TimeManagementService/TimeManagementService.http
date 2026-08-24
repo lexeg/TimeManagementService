@@ -1,0 +1,6 @@
+@TimeManagementService_HostAddress = http://localhost:5111
+
+GET {{TimeManagementService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

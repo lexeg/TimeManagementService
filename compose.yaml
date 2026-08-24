@@ -1,0 +1,6 @@
+﻿services:
+  timemanagementservice:
+    image: timemanagementservice
+    build:
+      context: .
+      dockerfile: TimeManagementService/Dockerfile
