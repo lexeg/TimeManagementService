@@ -14,6 +14,16 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("Frontend", policy =>
+            {
+                policy
+                    .WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -32,6 +42,7 @@ public class Program
 
         app.UseAuthorization();
 
+        app.UseCors("Frontend");
 
         app.MapControllers();
 
