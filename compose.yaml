@@ -17,8 +17,8 @@
   frontend:
     image: timemanagement-ui
     build:
-      context: .
-      dockerfile: task-management-ui/Dockerfile
+      context: ./task-management-ui
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     depends_on:
