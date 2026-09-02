@@ -7,8 +7,6 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=TasksDB;Username=postgres;Password=${POSTGRES_PASSWORD}"
-    ports:
-      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
