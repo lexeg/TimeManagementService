@@ -14,6 +14,16 @@
         condition: service_healthy
     restart: unless-stopped
 
+  frontend:
+    image: timemanagement-ui
+    build:
+      context: .
+      dockerfile: task-management-ui/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - timemanagementservice
+
   postgres:
     image: postgres:16
     environment:
