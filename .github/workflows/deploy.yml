@@ -1,0 +1,58 @@
+name: CI/CD
+run-name: ${{ github.actor }} is deploing out tms with GitHub Actions 🚀
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore TimeManagementService.sln
+
+      - name: Build
+        run: dotnet build TimeManagementService.sln --configuration Release --no-restore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: task-management-ui/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: task-management-ui
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: task-management-ui
+        run: npm run build
+
+  deploy:
+    name: Deploy to Timeweb
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /var/www/tms
+            git fetch origin
+            git reset --hard origin/master
+            docker compose build
+            docker compose up -d
+            docker image prune -f

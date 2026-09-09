@@ -21,6 +21,7 @@
       - "80:80"
     depends_on:
       - timemanagementservice
+    restart: unless-stopped
 
   postgres:
     image: postgres:16
