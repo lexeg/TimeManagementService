@@ -5,7 +5,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{05B1D627-9FE6-4B8B-A348-8DDCF6DC1841}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
+		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManagementService.DataAccess.Migrations", "TimeManagementService.DataAccess.Migrations\TimeManagementService.DataAccess.Migrations.csproj", "{2D7199E5-C2BD-4FD9-87E7-E001AB99F54F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,5 +20,9 @@ Global
 		{130EC65B-26E7-40D5-93CA-90913FED7D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{130EC65B-26E7-40D5-93CA-90913FED7D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{130EC65B-26E7-40D5-93CA-90913FED7D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D7199E5-C2BD-4FD9-87E7-E001AB99F54F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D7199E5-C2BD-4FD9-87E7-E001AB99F54F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D7199E5-C2BD-4FD9-87E7-E001AB99F54F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D7199E5-C2BD-4FD9-87E7-E001AB99F54F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
