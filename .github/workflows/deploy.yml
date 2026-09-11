@@ -60,7 +60,7 @@ jobs:
 
       - name: Generate migration script
         run: |
-          dotnet ef migrations script \
+          dotnet tool run dotnet-ef migrations script \
             --idempotent \
             --project TimeManagementService.DataAccess.Migrations \
             --startup-project TimeManagementService.DataAccess.Migrations \
