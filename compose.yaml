@@ -40,5 +40,25 @@
       retries: 10
     restart: unless-stopped
 
+  postgres-migrations:
+    image: postgres:16
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./Databases/TimeManagementDB.sql:/migration.sql:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        psql \
+          -h postgres \
+          -p 5432 \
+          -U postgres \
+          -d TasksDB \
+          -f /migration.sql
+    restart: "no"
+
 volumes:
   postgres_data:
