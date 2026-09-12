@@ -30,6 +30,9 @@ public class ApplicationDbContext : DbContext
                 .HasMaxLength(200)
                 .HasColumnName("name");
             entity.Property(e => e.Tags).HasColumnName("tags");
+            entity.Property(e => e.Status)
+                .HasColumnName("status")
+                .HasDefaultValue(StatusTypes.New);
         });
     }
 }
