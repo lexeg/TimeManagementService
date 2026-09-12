@@ -25,6 +25,14 @@ echo "----------------------------------------"
 docker compose up -d postgres
 
 echo "----------------------------------------"
+echo "Creating database"
+echo "----------------------------------------"
+
+docker compose run --rm postgres-create-db
+
+echo "Database initialization completed."
+
+echo "----------------------------------------"
 echo "Applying database migrations"
 echo "----------------------------------------"
 

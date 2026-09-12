@@ -40,6 +40,26 @@
       retries: 10
     restart: unless-stopped
 
+  postgres-create-db:
+    image: postgres:16
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./Databases/CreateDatabase.sql:/create-database.sql:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        psql \
+          -h postgres \
+          -p 5432 \
+          -U postgres \
+          -d postgres \
+          -f /create-database.sql
+    restart: "no"
+
   postgres-migrations:
     image: postgres:16
     depends_on:
