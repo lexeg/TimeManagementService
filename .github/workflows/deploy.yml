@@ -23,6 +23,9 @@ jobs:
       - name: Build
         run: dotnet build TimeManagementService.sln --configuration Release --no-restore
 
+      - name: Run unit tests
+        run: dotnet test ./Tests/TimeManagementService.Tests/TimeManagementService.Tests.csproj --configuration Release --no-build --verbosity normal
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
