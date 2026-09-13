@@ -1,4 +1,4 @@
-﻿namespace TimeManagementService.DataAccess;
+﻿namespace TimeManagementService.DataAccess.Enums;
 
 public enum StatusTypes
 {

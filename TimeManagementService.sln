@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1186ED07
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManagementService.Tests", "Tests\TimeManagementService.Tests\TimeManagementService.Tests.csproj", "{2E0885EE-E7D2-4EE4-B873-FE42630BAAC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManagementService.DataAccess", "TimeManagementService.DataAccess\TimeManagementService.DataAccess.csproj", "{A94294BF-D6DB-47C6-B628-12BD8B59AB1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{2E0885EE-E7D2-4EE4-B873-FE42630BAAC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E0885EE-E7D2-4EE4-B873-FE42630BAAC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E0885EE-E7D2-4EE4-B873-FE42630BAAC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A94294BF-D6DB-47C6-B628-12BD8B59AB1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A94294BF-D6DB-47C6-B628-12BD8B59AB1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A94294BF-D6DB-47C6-B628-12BD8B59AB1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A94294BF-D6DB-47C6-B628-12BD8B59AB1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2E0885EE-E7D2-4EE4-B873-FE42630BAAC6} = {1186ED07-77E7-4275-AEC6-EB0A8D3AEC0F}

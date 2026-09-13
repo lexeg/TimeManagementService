@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TimeManagementService.DataAccess;
+using TimeManagementService.DataAccess.Contexts;
 
 namespace TimeManagementService;
 

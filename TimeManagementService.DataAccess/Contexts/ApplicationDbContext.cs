@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TimeManagementService.DataAccess.Entities;
+using TimeManagementService.DataAccess.Enums;
 
-namespace TimeManagementService.DataAccess;
+namespace TimeManagementService.DataAccess.Contexts;
 
 public class ApplicationDbContext : DbContext
 {

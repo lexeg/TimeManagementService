@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using TimeManagementService.DataAccess.Contexts;
 
-namespace TimeManagementService.DataAccess.Migrations.csproj;
+namespace TimeManagementService.DataAccess.Migrations;
 
 public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {

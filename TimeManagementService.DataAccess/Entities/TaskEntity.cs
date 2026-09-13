@@ -1,4 +1,6 @@
-﻿namespace TimeManagementService.DataAccess;
+﻿using TimeManagementService.DataAccess.Enums;
+
+namespace TimeManagementService.DataAccess.Entities;
 
 public class TaskEntity
 {

@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TimeManagementService.DataAccess;
+using TimeManagementService.DataAccess.Contexts;
+using TimeManagementService.DataAccess.Entities;
 
 namespace TimeManagementService.Controllers;
 

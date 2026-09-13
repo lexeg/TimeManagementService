@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TimeManagementService.DataAccess;
+using TimeManagementService.DataAccess.Contexts;
 
 #nullable disable
 
