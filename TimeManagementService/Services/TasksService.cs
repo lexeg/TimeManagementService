@@ -38,21 +38,26 @@ public class TasksService : ITasksService
             Name = taskModel.Name,
             Description = taskModel.Description,
             Tags = taskModel.Tags,
-            Status = StatusTypes.InProgress,
+            Status = StatusTypes.New,
             DeadlineAt = taskModel.DeadlineAt
         };
         _applicationDbContext.Tasks.Add(taskEntity);
         return _applicationDbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateTask(TaskModel taskModel)
+    public async Task UpdateTask(long taskId, TaskModel taskModel)
     {
-        var taskEntity = await GetTaskById(taskModel.Id);
+        var taskEntity = await GetTaskById(taskId);
         if (taskEntity == null)
         {
-            throw new KeyNotFoundException($"Task with id {taskModel.Id} not found");
+            throw new KeyNotFoundException($"Task with id {taskId} not found");
         }
 
+        taskEntity.Name = taskModel.Name;
+        taskEntity.Description = taskModel.Description;
+        taskEntity.Tags = taskModel.Tags;
+        taskEntity.Status = taskModel.Status;
+        taskEntity.DeadlineAt = taskModel.DeadlineAt;
         _applicationDbContext.Tasks.Update(taskEntity);
         await _applicationDbContext.SaveChangesAsync();
     }

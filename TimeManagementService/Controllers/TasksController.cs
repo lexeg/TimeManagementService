@@ -22,13 +22,13 @@ public class TasksController : ControllerBase
     [HttpPost("tasks")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<HttpResponseMessage> CreateTask([FromBody] CreateTaskModel taskModel)
+    public async Task<IActionResult> CreateTask([FromBody] CreateTaskModel taskModel)
     {
         if (taskModel == null)
-            return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            return BadRequest();
 
         await _tasksService.CreateTask(taskModel);
-        return new HttpResponseMessage(HttpStatusCode.NoContent);
+        return NoContent();
     }
 
     [HttpDelete("tasks/{taskId:long}")]
@@ -40,22 +40,22 @@ public class TasksController : ControllerBase
         return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
 
-    [HttpPut("tasks")]
+    [HttpPut("tasks/{id:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<HttpResponseMessage> UpdateTask([FromBody] TaskModel taskModel)
+    public async Task<HttpResponseMessage> UpdateTask([FromRoute] long id, [FromBody] TaskModel taskModel)
     {
         if (taskModel == null)
             return new HttpResponseMessage(HttpStatusCode.BadRequest);
 
         try
         {
-            await _tasksService.UpdateTask(taskModel);
+            await _tasksService.UpdateTask(id, taskModel);
         }
         catch (KeyNotFoundException exception)
         {
-            _logger.LogWarning(exception, "Task with id {TaskModelId} not found", taskModel.Id);
+            _logger.LogWarning(exception, "Task with id {TaskModelId} not found", id);
             return new HttpResponseMessage(HttpStatusCode.NotFound);
         }
         catch (ArgumentNullException)
