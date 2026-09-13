@@ -17,12 +17,17 @@ public class TasksService : ITasksService
 
     public Task<TaskEntity[]> GetTasks()
     {
-        return _applicationDbContext.Tasks.ToArrayAsync();
+        return _applicationDbContext.Tasks
+            .Where(x => x.DeletedAt == null)
+            .ToArrayAsync();
     }
 
     public Task<TaskEntity?> GetTaskById(long taskId)
     {
-        return _applicationDbContext.Tasks.Where(x => x.Id == taskId).FirstOrDefaultAsync();
+        return _applicationDbContext.Tasks
+            .Where(x => x.DeletedAt == null)
+            .Where(x => x.Id == taskId)
+            .FirstOrDefaultAsync();
     }
 
     public Task CreateTask(CreateTaskModel taskModel)
@@ -54,8 +59,20 @@ public class TasksService : ITasksService
 
     public Task DeleteTask(long taskId)
     {
-        var entities = _applicationDbContext.Tasks.Where(x => x.Id == taskId).ToArray();
-        _applicationDbContext.Tasks.RemoveRange(entities);
+        var entities = _applicationDbContext.Tasks
+            .Where(x => x.Id == taskId)
+            .ToArray();
+        if (entities.Length == 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        foreach (var entity in entities)
+        {
+            entity.DeletedAt = DateTime.UtcNow;
+        }
+
+        _applicationDbContext.Tasks.UpdateRange(entities);
         return _applicationDbContext.SaveChangesAsync();
     }
 }
