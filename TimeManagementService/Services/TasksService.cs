@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TimeManagementService.DataAccess.Contexts;
 using TimeManagementService.DataAccess.Entities;
+using TimeManagementService.DataAccess.Enums;
+using TimeManagementService.Models;
 
 namespace TimeManagementService.Services;
 
@@ -23,16 +25,31 @@ public class TasksService : ITasksService
         return _applicationDbContext.Tasks.Where(x => x.Id == taskId).FirstOrDefaultAsync();
     }
 
-    public Task CreateTask(TaskEntity taskEntity)
+    public Task CreateTask(CreateTaskModel taskModel)
     {
+        // TODO: add Mapster
+        var taskEntity = new TaskEntity
+        {
+            Name = taskModel.Name,
+            Description = taskModel.Description,
+            Tags = taskModel.Tags,
+            Status = StatusTypes.InProgress,
+            DeadlineAt = taskModel.DeadlineAt
+        };
         _applicationDbContext.Tasks.Add(taskEntity);
         return _applicationDbContext.SaveChangesAsync();
     }
 
-    public Task UpdateTask(TaskEntity taskEntity)
+    public async Task UpdateTask(TaskModel taskModel)
     {
+        var taskEntity = await GetTaskById(taskModel.Id);
+        if (taskEntity == null)
+        {
+            throw new KeyNotFoundException($"Task with id {taskModel.Id} not found");
+        }
+
         _applicationDbContext.Tasks.Update(taskEntity);
-        return _applicationDbContext.SaveChangesAsync();
+        await _applicationDbContext.SaveChangesAsync();
     }
 
     public Task DeleteTask(long taskId)

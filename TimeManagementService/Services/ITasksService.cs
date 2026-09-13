@@ -1,4 +1,5 @@
 ﻿using TimeManagementService.DataAccess.Entities;
+using TimeManagementService.Models;
 
 namespace TimeManagementService.Services;
 
@@ -6,7 +7,7 @@ public interface ITasksService
 {
     Task<TaskEntity[]> GetTasks();
     Task<TaskEntity?> GetTaskById(long taskId);
-    Task CreateTask(TaskEntity taskEntity);
-    Task UpdateTask(TaskEntity taskEntity);
+    Task CreateTask(CreateTaskModel taskModel);
+    Task UpdateTask(TaskModel taskModel);
     Task DeleteTask(long taskId);
 }

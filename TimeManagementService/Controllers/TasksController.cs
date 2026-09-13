@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using TimeManagementService.DataAccess.Entities;
+using TimeManagementService.Models;
 using TimeManagementService.Services;
 
 namespace TimeManagementService.Controllers;
@@ -21,12 +22,12 @@ public class TasksController : ControllerBase
     [HttpPost("tasks")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<HttpResponseMessage> CreateTask([FromBody] TaskEntity task)
+    public async Task<HttpResponseMessage> CreateTask([FromBody] CreateTaskModel taskModel)
     {
-        if (task == null)
+        if (taskModel == null)
             return new HttpResponseMessage(HttpStatusCode.BadRequest);
 
-        await _tasksService.CreateTask(task);
+        await _tasksService.CreateTask(taskModel);
         return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
 
@@ -43,14 +44,19 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<HttpResponseMessage> UpdateTask([FromBody] TaskEntity task)
+    public async Task<HttpResponseMessage> UpdateTask([FromBody] TaskModel taskModel)
     {
-        if (task == null)
+        if (taskModel == null)
             return new HttpResponseMessage(HttpStatusCode.BadRequest);
 
         try
         {
-            await _tasksService.UpdateTask(task);
+            await _tasksService.UpdateTask(taskModel);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            _logger.LogWarning(exception, "Task with id {TaskModelId} not found", taskModel.Id);
+            return new HttpResponseMessage(HttpStatusCode.NotFound);
         }
         catch (ArgumentNullException)
         {
