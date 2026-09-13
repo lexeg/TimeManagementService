@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TimeManagementService.DataAccess.Contexts;
 using TimeManagementService.DataAccess.Entities;
+using TimeManagementService.Services;
 
 namespace TimeManagementService.Controllers;
 
@@ -10,12 +9,12 @@ namespace TimeManagementService.Controllers;
 [Route("api/[controller]")]
 public class TasksController : ControllerBase
 {
-    private readonly ApplicationDbContext _applicationDbContext;
+    private readonly ITasksService _tasksService;
     private readonly ILogger<TasksController> _logger;
 
-    public TasksController(ApplicationDbContext applicationDbContext, ILogger<TasksController> logger)
+    public TasksController(ITasksService tasksService, ILogger<TasksController> logger)
     {
-        _applicationDbContext = applicationDbContext;
+        _tasksService = tasksService;
         _logger = logger;
     }
 
@@ -27,19 +26,16 @@ public class TasksController : ControllerBase
         if (task == null)
             return new HttpResponseMessage(HttpStatusCode.BadRequest);
 
-        _applicationDbContext.Tasks.Add(task);
-        await _applicationDbContext.SaveChangesAsync();
+        await _tasksService.CreateTask(task);
         return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
 
-    [HttpDelete("tasks/{taskId}")]
+    [HttpDelete("tasks/{taskId:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<HttpResponseMessage> DeleteTask(long taskId)
     {
-        var entities = _applicationDbContext.Tasks.Where(x => x.Id == taskId).ToArray();
-        _applicationDbContext.Tasks.RemoveRange(entities);
-        await _applicationDbContext.SaveChangesAsync();
+        await _tasksService.DeleteTask(taskId);
         return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
 
@@ -54,8 +50,7 @@ public class TasksController : ControllerBase
 
         try
         {
-            _applicationDbContext.Tasks.Update(task);
-            await _applicationDbContext.SaveChangesAsync();
+            await _tasksService.UpdateTask(task);
         }
         catch (ArgumentNullException)
         {
@@ -70,7 +65,7 @@ public class TasksController : ControllerBase
     public async Task<TaskEntity[]> GetTasks()
     {
         _logger.Log(LogLevel.Information, "get all tasks");
-        var tasks = await _applicationDbContext.Tasks.ToArrayAsync();
+        var tasks = await _tasksService.GetTasks();
         return tasks;
     }
 
@@ -78,7 +73,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(TaskEntity), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTaskById(long id)
     {
-        var task = await _applicationDbContext.Tasks.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var task = await _tasksService.GetTaskById(id);
         if (task == null)
         {
             return NotFound();

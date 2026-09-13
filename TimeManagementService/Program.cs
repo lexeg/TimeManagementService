@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TimeManagementService.DataAccess.Contexts;
+using TimeManagementService.Services;
 
 namespace TimeManagementService;
 
@@ -14,6 +15,7 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddScoped<ITasksService, TasksService>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("Frontend", policy =>
