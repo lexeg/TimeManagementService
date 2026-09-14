@@ -7,7 +7,7 @@ public interface ITasksService
 {
     Task<TaskEntity[]> GetTasks();
     Task<TaskEntity?> GetTaskById(long taskId);
-    Task CreateTask(CreateTaskModel taskModel);
-    Task UpdateTask(long taskId, TaskModel taskModel);
+    Task CreateTask(CreateTaskRequest taskRequest);
+    Task UpdateTask(long taskId, UpdateTaskRequest taskRequest);
     Task DeleteTask(long taskId);
 }

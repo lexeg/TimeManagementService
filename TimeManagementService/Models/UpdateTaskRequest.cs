@@ -2,7 +2,7 @@
 
 namespace TimeManagementService.Models;
 
-public class TaskModel
+public class UpdateTaskRequest
 {
     public string Name { get; set; } = null!;
 

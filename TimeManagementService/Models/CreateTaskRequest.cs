@@ -1,8 +1,8 @@
 ﻿namespace TimeManagementService.Models;
 
-public class CreateTaskModel
+public class CreateTaskRequest
 {
-    public string Name { get; set; } = null!;
+    public string Title { get; set; } = null!;
 
     public string Description { get; set; } = null!;
 

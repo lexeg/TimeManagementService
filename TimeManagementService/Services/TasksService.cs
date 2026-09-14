@@ -30,22 +30,22 @@ public class TasksService : ITasksService
             .FirstOrDefaultAsync();
     }
 
-    public Task CreateTask(CreateTaskModel taskModel)
+    public Task CreateTask(CreateTaskRequest taskRequest)
     {
         // TODO: add Mapster
         var taskEntity = new TaskEntity
         {
-            Name = taskModel.Name,
-            Description = taskModel.Description,
-            Tags = taskModel.Tags,
+            Name = taskRequest.Title,
+            Description = taskRequest.Description,
+            Tags = taskRequest.Tags,
             Status = StatusTypes.New,
-            DeadlineAt = taskModel.DeadlineAt
+            DeadlineAt = taskRequest.DeadlineAt
         };
         _applicationDbContext.Tasks.Add(taskEntity);
         return _applicationDbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateTask(long taskId, TaskModel taskModel)
+    public async Task UpdateTask(long taskId, UpdateTaskRequest taskRequest)
     {
         var taskEntity = await GetTaskById(taskId);
         if (taskEntity == null)
@@ -53,11 +53,11 @@ public class TasksService : ITasksService
             throw new KeyNotFoundException($"Task with id {taskId} not found");
         }
 
-        taskEntity.Name = taskModel.Name;
-        taskEntity.Description = taskModel.Description;
-        taskEntity.Tags = taskModel.Tags;
-        taskEntity.Status = taskModel.Status;
-        taskEntity.DeadlineAt = taskModel.DeadlineAt;
+        taskEntity.Name = taskRequest.Name;
+        taskEntity.Description = taskRequest.Description;
+        taskEntity.Tags = taskRequest.Tags;
+        taskEntity.Status = taskRequest.Status;
+        taskEntity.DeadlineAt = taskRequest.DeadlineAt;
         _applicationDbContext.Tasks.Update(taskEntity);
         await _applicationDbContext.SaveChangesAsync();
     }
