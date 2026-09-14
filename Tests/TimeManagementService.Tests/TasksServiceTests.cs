@@ -141,6 +141,23 @@ public class TasksServiceTests
     }
 
     [Fact]
+    public async Task UpdateTask_WhenTaskDoesNotExist_ThrowsKeyNotFoundException()
+    {
+        await using var dbContext = CreateDbContext();
+        var service = new TasksService(dbContext);
+
+        var model = new UpdateTaskRequest
+        {
+            Title = "Test task",
+            Description = "Test description",
+            Status = StatusTypes.InProgress
+        };
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(
+            () => service.UpdateTask(999, model));
+    }
+
+    [Fact]
     public async Task DeleteTask_SetsDeletedAt()
     {
         await using var dbContext = CreateDbContext();
@@ -160,10 +177,11 @@ public class TasksServiceTests
         await service.DeleteTask(task.Id);
 
         var deletedTask = await dbContext.Tasks
-            .IgnoreQueryFilters()
             .SingleAsync();
+        var result = await service.GetTaskById(task.Id);
 
         Assert.NotNull(deletedTask.DeletedAt);
+        Assert.Null(result);
     }
 
     private static ApplicationDbContext CreateDbContext()

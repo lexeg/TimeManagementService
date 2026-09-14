@@ -57,10 +57,6 @@ public class TasksController : ControllerBase
             _logger.LogWarning(exception, "Task with id {TaskModelId} not found", id);
             return NotFound();
         }
-        catch (ArgumentNullException)
-        {
-            return NotFound();
-        }
 
         return NoContent();
     }

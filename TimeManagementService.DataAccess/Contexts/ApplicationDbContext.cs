@@ -27,10 +27,13 @@ public class ApplicationDbContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.DeadlineAt).HasColumnName("deadline_at");
             entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
-            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Description)
+                .HasColumnName("description")
+                .IsRequired();
             entity.Property(e => e.Name)
                 .HasMaxLength(200)
-                .HasColumnName("name");
+                .HasColumnName("name")
+                .IsRequired();
             entity.Property(e => e.Tags).HasColumnName("tags");
             entity.Property(e => e.Status)
                 .HasColumnName("status")

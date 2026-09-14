@@ -12,7 +12,7 @@ public class TaskEntity
 
     public string? Tags { get; set; }
 
-    public StatusTypes? Status { get; set; }
+    public StatusTypes Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

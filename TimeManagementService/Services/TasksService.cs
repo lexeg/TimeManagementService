@@ -62,22 +62,21 @@ public class TasksService : ITasksService
         await _applicationDbContext.SaveChangesAsync();
     }
 
-    public Task DeleteTask(long taskId)
+    public async Task DeleteTask(long taskId)
     {
+        var entity = await _applicationDbContext.Tasks
+            .FirstOrDefaultAsync(x => x.Id == taskId);
         var entities = _applicationDbContext.Tasks
             .Where(x => x.Id == taskId)
             .ToArray();
-        if (entities.Length == 0)
+        if (entity == null)
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        foreach (var entity in entities)
-        {
-            entity.DeletedAt = DateTime.UtcNow;
-        }
+        entity.DeletedAt = DateTime.UtcNow;
 
         _applicationDbContext.Tasks.UpdateRange(entities);
-        return _applicationDbContext.SaveChangesAsync();
+        await _applicationDbContext.SaveChangesAsync();
     }
 }

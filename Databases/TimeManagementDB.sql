@@ -51,3 +51,23 @@ BEGIN
 END $EF$;
 COMMIT;
 
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260914145445_SetStatusNotNull') THEN
+    UPDATE tasks SET status = 0 WHERE status IS NULL;
+    ALTER TABLE tasks ALTER COLUMN status SET NOT NULL;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260914145445_SetStatusNotNull') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260914145445_SetStatusNotNull', '8.0.11');
+    END IF;
+END $EF$;
+COMMIT;
+
