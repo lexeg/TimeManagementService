@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TimeManagementService.DataAccess.Entities;
 using TimeManagementService.Models;
 using TimeManagementService.Services;
@@ -34,20 +33,20 @@ public class TasksController : ControllerBase
     [HttpDelete("tasks/{taskId:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<HttpResponseMessage> DeleteTask(long taskId)
+    public async Task<IActionResult> DeleteTask(long taskId)
     {
         await _tasksService.DeleteTask(taskId);
-        return new HttpResponseMessage(HttpStatusCode.NoContent);
+        return NoContent();
     }
 
     [HttpPut("tasks/{id:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<HttpResponseMessage> UpdateTask([FromRoute] long id, [FromBody] UpdateTaskRequest taskRequest)
+    public async Task<IActionResult> UpdateTask([FromRoute] long id, [FromBody] UpdateTaskRequest taskRequest)
     {
         if (taskRequest == null)
-            return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            return BadRequest();
 
         try
         {
@@ -56,14 +55,14 @@ public class TasksController : ControllerBase
         catch (KeyNotFoundException exception)
         {
             _logger.LogWarning(exception, "Task with id {TaskModelId} not found", id);
-            return new HttpResponseMessage(HttpStatusCode.NotFound);
+            return NotFound();
         }
         catch (ArgumentNullException)
         {
-            return new HttpResponseMessage(HttpStatusCode.NotFound);
+            return NotFound();
         }
 
-        return new HttpResponseMessage(HttpStatusCode.NoContent);
+        return NoContent();
     }
 
     [HttpGet("tasks")]
