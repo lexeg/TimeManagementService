@@ -5,6 +5,16 @@ interface Task {
   id: number;
   title: string;
   description?: string;
+  tags?: string;
+  status: number;
+  createdAt: Date;
+  deadlineAt?: Date;
+}
+interface CreateTask {
+  title: string;
+  description?: string;
+  tags?: string;
+  deadlineAt?: Date;
 }
 
 const API_URL = "/api/Tasks";
@@ -40,9 +50,9 @@ function App() {
       return;
     }
 
-    const task: Task = {
-      id: 0,
+    const task: CreateTask = {
       title: title.trim(),
+      description: "",
     };
 
     const response = await fetch(`${API_URL}/tasks`, {
