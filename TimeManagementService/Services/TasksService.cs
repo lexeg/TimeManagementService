@@ -53,7 +53,7 @@ public class TasksService : ITasksService
             throw new KeyNotFoundException($"Task with id {taskId} not found");
         }
 
-        taskEntity.Name = taskRequest.Name;
+        taskEntity.Name = taskRequest.Title;
         taskEntity.Description = taskRequest.Description;
         taskEntity.Tags = taskRequest.Tags;
         taskEntity.Status = taskRequest.Status;
