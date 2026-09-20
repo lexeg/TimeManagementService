@@ -1,23 +1,12 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-
-interface Task {
-  id: number;
-  title: string;
-  description?: string;
-  tags?: string;
-  status: number;
-  createdAt: Date;
-  deadlineAt?: Date;
-}
-interface CreateTask {
-  title: string;
-  description?: string;
-  tags?: string;
-  deadlineAt?: Date;
-}
-
-const API_URL = "/api/Tasks";
+import type { Task } from "./types/task";
+import {
+  getTasks,
+  createTask as createTaskApi,
+  deleteTask as deleteTaskApi,
+} from "./api/tasksApi";
+import TaskList from "./components/TaskList";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -26,13 +15,7 @@ function App() {
 
   const loadTasks = async () => {
     try {
-      const response = await fetch(`${API_URL}/tasks`);
-
-      if (!response.ok) {
-        throw new Error("Failed to load tasks");
-      }
-
-      const data = await response.json();
+      const data = await getTasks();
       setTasks(data);
     } catch (error) {
       console.error(error);
@@ -50,39 +33,27 @@ function App() {
       return;
     }
 
-    const task: CreateTask = {
-      title: title.trim(),
-      description: "",
-    };
+    try {
+      await createTaskApi({
+        title: title.trim(),
+        description: "",
+      });
 
-    const response = await fetch(`${API_URL}/tasks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-
-    if (!response.ok) {
-      console.error("Failed to create task");
-      return;
+      setTitle("");
+      await loadTasks();
+    } catch (error) {
+      console.error(error);
     }
-
-    setTitle("");
-    await loadTasks();
   };
 
   const deleteTask = async (id: number) => {
-    const response = await fetch(`${API_URL}/tasks/${id}`, {
-      method: "DELETE",
-    });
+    try {
+      await deleteTaskApi(id);
 
-    if (!response.ok) {
-      console.error("Failed to delete task");
-      return;
+      setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error(error);
     }
-
-    setTasks(tasks.filter((x) => x.id !== id));
   };
 
   if (loading) {
@@ -116,30 +87,7 @@ function App() {
         <section>
           <h2>Tasks</h2>
 
-          {tasks.length === 0 ? (
-            <div className="empty">No tasks yet</div>
-          ) : (
-            <div className="task-list">
-              {tasks.map((task) => (
-                <div className="task" key={task.id}>
-                  <div>
-                    <div className="task-title">{task.title}</div>
-
-                    {task.description && (
-                      <div className="task-description">{task.description}</div>
-                    )}
-                  </div>
-
-                  <button
-                    className="delete-button"
-                    onClick={() => deleteTask(task.id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <TaskList tasks={tasks} onDelete={deleteTask} />
         </section>
       </main>
     </div>
