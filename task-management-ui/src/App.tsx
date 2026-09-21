@@ -12,13 +12,18 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const loadTasks = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const data = await getTasks();
       setTasks(data);
     } catch (error) {
       console.error(error);
+      setError("Failed to load tasks");
     } finally {
       setLoading(false);
     }
@@ -33,6 +38,8 @@ function App() {
       return;
     }
 
+    setCreateError(null);
+
     try {
       await createTaskApi({
         title: title.trim(),
@@ -43,6 +50,7 @@ function App() {
       await loadTasks();
     } catch (error) {
       console.error(error);
+      setCreateError("Failed to create tasks");
     }
   };
 
@@ -58,6 +66,15 @@ function App() {
 
   if (loading) {
     return <div className="loading">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="error">
+        <p>{error}</p>
+        <button onClick={loadTasks}>Retry</button>
+      </div>
+    );
   }
 
   return (
@@ -82,6 +99,8 @@ function App() {
           />
 
           <button onClick={createTask}>Add</button>
+
+          {createError && <div className="error">{createError}</div>}
         </section>
 
         <section>
