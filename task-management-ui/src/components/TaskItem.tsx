@@ -1,4 +1,5 @@
 import type { Task } from "../types/task";
+import TaskStatus from "./TaskStatus";
 
 interface TaskItemProps {
   task: Task;
@@ -10,7 +11,7 @@ function TaskItem({ task, onDelete }: TaskItemProps) {
     <div className="task" key={task.id}>
       <div>
         <div className="task-title">{task.title}</div>
-
+        <TaskStatus status={task.status} />
         {task.description && (
           <div className="task-description">{task.description}</div>
         )}
