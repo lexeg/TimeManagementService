@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import type { Task } from "./types/task";
-import {
-  getTasks,
-  createTask as createTaskApi,
-  deleteTask as deleteTaskApi,
-} from "./api/tasksApi";
+import { getTasks, deleteTask as deleteTaskApi } from "./api/tasksApi";
 import TaskList from "./components/TaskList";
+import TaskForm from "./components/TaskForm";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [createError, setCreateError] = useState<string | null>(null);
 
   const loadTasks = async () => {
     try {
@@ -32,27 +27,6 @@ function App() {
   useEffect(() => {
     loadTasks();
   }, []);
-
-  const createTask = async () => {
-    if (!title.trim()) {
-      return;
-    }
-
-    setCreateError(null);
-
-    try {
-      await createTaskApi({
-        title: title.trim(),
-        description: "",
-      });
-
-      setTitle("");
-      await loadTasks();
-    } catch (error) {
-      console.error(error);
-      setCreateError("Failed to create tasks");
-    }
-  };
 
   const deleteTask = async (id: number) => {
     try {
@@ -85,23 +59,7 @@ function App() {
       </header>
 
       <main>
-        <section className="create-task">
-          <input
-            type="text"
-            placeholder="Enter task title..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                createTask();
-              }
-            }}
-          />
-
-          <button onClick={createTask}>Add</button>
-
-          {createError && <div className="error">{createError}</div>}
-        </section>
+        <TaskForm onCreated={loadTasks} />
 
         <section>
           <h2>Tasks</h2>
