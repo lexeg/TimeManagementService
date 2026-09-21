@@ -1,5 +1,6 @@
 import type { Task } from "../types/task";
 import TaskStatus from "./TaskStatus";
+import { formatLocalDateTime } from "../utils/dateUtils";
 
 interface TaskItemProps {
   task: Task;
@@ -14,6 +15,14 @@ function TaskItem({ task, onDelete }: TaskItemProps) {
         <TaskStatus status={task.status} />
         {task.description && (
           <div className="task-description">{task.description}</div>
+        )}
+      </div>
+
+      <div className="task-meta">
+        <div>Created: {formatLocalDateTime(task.createdAt)}</div>
+
+        {task.deadlineAt && (
+          <div>Deadline: {formatLocalDateTime(task.deadlineAt)}</div>
         )}
       </div>
 
