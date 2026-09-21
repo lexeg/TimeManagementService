@@ -8,6 +8,15 @@ interface TaskFormProps {
   onCreated: () => Promise<void>;
 }
 
+function convertLocalDateTimeToUtc(dateTimeLocal: string): string | undefined {
+  if (!dateTimeLocal) {
+    return undefined;
+  }
+
+  const date = new Date(dateTimeLocal);
+  return date.toISOString();
+}
+
 function TaskForm({ onCreated }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -29,7 +38,7 @@ function TaskForm({ onCreated }: TaskFormProps) {
       title: title.trim(),
       description: description.trim(),
       tags: tags.trim(),
-      deadlineAt: deadlineAt || undefined,
+      deadlineAt: convertLocalDateTimeToUtc(deadlineAt),
     };
 
     try {
