@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import type { Task } from "./types/task";
-import { getTasks, deleteTask as deleteTaskApi } from "./api/tasksApi";
+import {
+  getTasks,
+  deleteTask as deleteTaskApi,
+  updateTask as updateTaskApi,
+} from "./api/tasksApi";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 
@@ -34,6 +38,32 @@ function App() {
       await deleteTaskApi(id);
 
       setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateTaskStatus = async (id: number, status: Task["status"]) => {
+    const task = tasks.find((task) => task.id === id);
+
+    if (!task) {
+      return;
+    }
+
+    try {
+      await updateTaskApi(id, {
+        title: task.title,
+        description: task.description,
+        tags: task.tags,
+        status,
+        deadlineAt: task.deadlineAt,
+      });
+
+      setTasks((currentTasks) =>
+        currentTasks.map((currentTask) =>
+          currentTask.id === id ? { ...currentTask, status } : currentTask,
+        ),
+      );
     } catch (error) {
       console.error(error);
     }
@@ -82,7 +112,12 @@ function App() {
         <section>
           <h2>Tasks</h2>
 
-          <TaskList tasks={tasks} onDelete={deleteTask} onEdit={handleEdit} />
+          <TaskList
+            tasks={tasks}
+            onDelete={deleteTask}
+            onEdit={handleEdit}
+            onStatusChange={updateTaskStatus}
+          />
         </section>
       </main>
     </div>

@@ -5,9 +5,10 @@ interface TaskListProps {
   tasks: Task[];
   onDelete: (id: number) => void;
   onEdit: (task: Task) => void;
+  onStatusChange: (id: number, status: Task["status"]) => Promise<void>;
 }
 
-function TaskList({ tasks, onDelete, onEdit }: TaskListProps) {
+function TaskList({ tasks, onDelete, onEdit, onStatusChange }: TaskListProps) {
   if (tasks.length === 0) {
     return <div className="empty">No tasks yet</div>;
   }
@@ -20,6 +21,7 @@ function TaskList({ tasks, onDelete, onEdit }: TaskListProps) {
           task={task}
           onDelete={onDelete}
           onEdit={onEdit}
+          onStatusChange={onStatusChange}
         />
       ))}
     </div>
