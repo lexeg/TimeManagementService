@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   createTask as createTaskApi,
+  updateTask as updateTaskApi,
   type CreateTaskRequest,
+  type UpdateTaskRequest,
 } from "../api/tasksApi";
+import type { Task } from "../types/task";
 
 interface TaskFormProps {
-  onCreated: () => Promise<void>;
+  task?: Task;
+  onSaved: () => Promise<void>;
+  onCancel?: () => void;
 }
 
 function convertLocalDateTimeToUtc(dateTimeLocal: string): string | undefined {
@@ -17,13 +22,39 @@ function convertLocalDateTimeToUtc(dateTimeLocal: string): string | undefined {
   return date.toISOString();
 }
 
-function TaskForm({ onCreated }: TaskFormProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
-  const [deadlineAt, setDeadlineAt] = useState("");
+function convertUtcToLocalDateTime(dateTimeUtc?: string): string {
+  if (!dateTimeUtc) {
+    return "";
+  }
+
+  const date = new Date(dateTimeUtc);
+
+  const offset = date.getTimezoneOffset();
+
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+
+  return localDate.toISOString().slice(0, 16);
+}
+
+function TaskForm({ task, onSaved, onCancel }: TaskFormProps) {
+  const isEditMode = task !== undefined;
+
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [description, setDescription] = useState(task?.description ?? "");
+  const [tags, setTags] = useState(task?.tags ?? "");
+  const [deadlineAt, setDeadlineAt] = useState(
+    convertUtcToLocalDateTime(task?.deadlineAt),
+  );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setTitle(task?.title ?? "");
+    setDescription(task?.description ?? "");
+    setTags(task?.tags ?? "");
+    setDeadlineAt(convertUtcToLocalDateTime(task?.deadlineAt));
+    setError(null);
+  }, [task]);
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -34,25 +65,37 @@ function TaskForm({ onCreated }: TaskFormProps) {
     setError(null);
     setSaving(false);
 
-    const task: CreateTaskRequest = {
-      title: title.trim(),
-      description: description.trim(),
-      tags: tags.trim(),
-      deadlineAt: convertLocalDateTimeToUtc(deadlineAt),
-    };
-
     try {
-      await createTaskApi(task);
+      if (isEditMode && task) {
+        const updateTask: UpdateTaskRequest = {
+          title: title.trim(),
+          description: description.trim(),
+          tags: tags.trim(),
+          status: task.status,
+          deadlineAt: convertLocalDateTimeToUtc(deadlineAt),
+        };
+        await updateTaskApi(task.id, updateTask);
+      } else {
+        const task: CreateTaskRequest = {
+          title: title.trim(),
+          description: description.trim(),
+          tags: tags.trim(),
+          deadlineAt: convertLocalDateTimeToUtc(deadlineAt),
+        };
+        await createTaskApi(task);
+      }
 
-      setTitle("");
-      setDescription("");
-      setTags("");
-      setDeadlineAt("");
+      await onSaved();
 
-      await onCreated();
+      if (!isEditMode) {
+        setTitle("");
+        setDescription("");
+        setTags("");
+        setDeadlineAt("");
+      }
     } catch (error) {
       console.error(error);
-      setError("Failed to create task");
+      setError(isEditMode ? "Failed to update task" : "Failed to create task");
     } finally {
       setSaving(false);
     }
@@ -60,6 +103,7 @@ function TaskForm({ onCreated }: TaskFormProps) {
 
   return (
     <section className="create-task">
+      <h2>{isEditMode ? "Edit task" : "Create task"}</h2>
       <div>
         <label htmlFor="title">Title</label>
         <input
@@ -104,9 +148,17 @@ function TaskForm({ onCreated }: TaskFormProps) {
         />
       </div>
 
-      <button type="button" onClick={handleSubmit} disabled={saving}>
-        {saving ? "Adding..." : "Add task"}
-      </button>
+      <div>
+        <button type="button" onClick={handleSubmit} disabled={saving}>
+          {saving ? "Saving..." : isEditMode ? "Save" : "Add task"}
+        </button>
+
+        {isEditMode && onCancel && (
+          <button type="button" onClick={onCancel} disabled={saving}>
+            Cancel
+          </button>
+        )}
+      </div>
 
       {error && <div className="error">{error}</div>}
     </section>

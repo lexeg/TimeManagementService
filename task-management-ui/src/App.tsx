@@ -7,6 +7,7 @@ import TaskForm from "./components/TaskForm";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +39,19 @@ function App() {
     }
   };
 
+  const handleSaved = async () => {
+    await loadTasks();
+    setEditingTask(null);
+  };
+
+  const handleEdit = async (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleCancelEdit = async () => {
+    setEditingTask(null);
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -59,12 +73,16 @@ function App() {
       </header>
 
       <main>
-        <TaskForm onCreated={loadTasks} />
+        <TaskForm
+          task={editingTask ?? undefined}
+          onSaved={handleSaved}
+          onCancel={handleCancelEdit}
+        />
 
         <section>
           <h2>Tasks</h2>
 
-          <TaskList tasks={tasks} onDelete={deleteTask} />
+          <TaskList tasks={tasks} onDelete={deleteTask} onEdit={handleEdit} />
         </section>
       </main>
     </div>

@@ -4,9 +4,10 @@ import TaskItem from "./TaskItem";
 interface TaskListProps {
   tasks: Task[];
   onDelete: (id: number) => void;
+  onEdit: (task: Task) => void;
 }
 
-function TaskList({ tasks, onDelete }: TaskListProps) {
+function TaskList({ tasks, onDelete, onEdit }: TaskListProps) {
   if (tasks.length === 0) {
     return <div className="empty">No tasks yet</div>;
   }
@@ -14,7 +15,12 @@ function TaskList({ tasks, onDelete }: TaskListProps) {
   return (
     <div className="task-list">
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} onDelete={onDelete} />
+        <TaskItem
+          key={task.id}
+          task={task}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       ))}
     </div>
   );

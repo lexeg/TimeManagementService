@@ -5,30 +5,39 @@ import { formatLocalDateTime } from "../utils/dateUtils";
 interface TaskItemProps {
   task: Task;
   onDelete: (id: number) => void;
+  onEdit: (task: Task) => void;
 }
 
-function TaskItem({ task, onDelete }: TaskItemProps) {
+function TaskItem({ task, onDelete, onEdit }: TaskItemProps) {
   return (
-    <div className="task" key={task.id}>
+    <div className="task">
       <div>
         <div className="task-title">{task.title}</div>
+
         <TaskStatus status={task.status} />
+
         {task.description && (
           <div className="task-description">{task.description}</div>
         )}
+
+        <div className="task-meta">
+          <div>Created: {formatLocalDateTime(task.createdAt)}</div>
+
+          {task.deadlineAt && (
+            <div>Deadline: {formatLocalDateTime(task.deadlineAt)}</div>
+          )}
+        </div>
       </div>
 
-      <div className="task-meta">
-        <div>Created: {formatLocalDateTime(task.createdAt)}</div>
+      <div>
+        <button className="edit-button" onClick={() => onEdit(task)}>
+          Edit
+        </button>
 
-        {task.deadlineAt && (
-          <div>Deadline: {formatLocalDateTime(task.deadlineAt)}</div>
-        )}
+        <button className="delete-button" onClick={() => onDelete(task.id)}>
+          Delete
+        </button>
       </div>
-
-      <button className="delete-button" onClick={() => onDelete(task.id)}>
-        Delete
-      </button>
     </div>
   );
 }

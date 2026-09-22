@@ -9,6 +9,14 @@ export interface CreateTaskRequest {
   deadlineAt?: string;
 }
 
+export interface UpdateTaskRequest {
+  title: string;
+  description?: string;
+  status: Task["status"];
+  tags?: string;
+  deadlineAt?: string;
+}
+
 export async function getTasks(): Promise<Task[]> {
   const response = await fetch(API_URL);
 
@@ -27,6 +35,23 @@ export async function createTask(task: CreateTaskRequest): Promise<void> {
   });
   if (!response.ok) {
     throw new Error("Failed to create task");
+  }
+}
+
+export async function updateTask(
+  id: number,
+  task: UpdateTaskRequest,
+): Promise<void> {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(task),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update task");
   }
 }
 
