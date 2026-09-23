@@ -1,15 +1,12 @@
-import { useState, useEffect } from "react";
-import {
-  createTask as createTaskApi,
-  updateTask as updateTaskApi,
-  type CreateTaskRequest,
-  type UpdateTaskRequest,
-} from "../api/tasksApi";
+import { useEffect, useState } from "react";
+import type { CreateTaskRequest, UpdateTaskRequest } from "../api/tasksApi";
 import type { Task } from "../types/task";
 
 interface TaskFormProps {
   task?: Task;
-  onSaved: () => Promise<void>;
+  onCreate: (task: CreateTaskRequest) => Promise<void>;
+  onUpdate: (id: number, task: UpdateTaskRequest) => Promise<void>;
+  onSaved: () => void;
   onCancel?: () => void;
 }
 
@@ -18,8 +15,7 @@ function convertLocalDateTimeToUtc(dateTimeLocal: string): string | undefined {
     return undefined;
   }
 
-  const date = new Date(dateTimeLocal);
-  return date.toISOString();
+  return new Date(dateTimeLocal).toISOString();
 }
 
 function convertUtcToLocalDateTime(dateTimeUtc?: string): string {
@@ -36,23 +32,36 @@ function convertUtcToLocalDateTime(dateTimeUtc?: string): string {
   return localDate.toISOString().slice(0, 16);
 }
 
-function TaskForm({ task, onSaved, onCancel }: TaskFormProps) {
+function TaskForm({
+  task,
+  onCreate,
+  onUpdate,
+  onSaved,
+  onCancel,
+}: TaskFormProps) {
   const isEditMode = task !== undefined;
 
   const [title, setTitle] = useState(task?.title ?? "");
+
   const [description, setDescription] = useState(task?.description ?? "");
+
   const [tags, setTags] = useState(task?.tags ?? "");
+
   const [deadlineAt, setDeadlineAt] = useState(
     convertUtcToLocalDateTime(task?.deadlineAt),
   );
+
   const [error, setError] = useState<string | null>(null);
+
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setTitle(task?.title ?? "");
     setDescription(task?.description ?? "");
     setTags(task?.tags ?? "");
+
     setDeadlineAt(convertUtcToLocalDateTime(task?.deadlineAt));
+
     setError(null);
   }, [task]);
 
@@ -63,29 +72,31 @@ function TaskForm({ task, onSaved, onCancel }: TaskFormProps) {
     }
 
     setError(null);
-    setSaving(false);
+    setSaving(true);
 
     try {
       if (isEditMode && task) {
-        const updateTask: UpdateTaskRequest = {
+        const updateRequest: UpdateTaskRequest = {
           title: title.trim(),
           description: description.trim(),
           tags: tags.trim(),
           status: task.status,
           deadlineAt: convertLocalDateTimeToUtc(deadlineAt),
         };
-        await updateTaskApi(task.id, updateTask);
+
+        await onUpdate(task.id, updateRequest);
       } else {
-        const task: CreateTaskRequest = {
+        const createRequest: CreateTaskRequest = {
           title: title.trim(),
           description: description.trim(),
           tags: tags.trim(),
           deadlineAt: convertLocalDateTimeToUtc(deadlineAt),
         };
-        await createTaskApi(task);
+
+        await onCreate(createRequest);
       }
 
-      await onSaved();
+      onSaved();
 
       if (!isEditMode) {
         setTitle("");
@@ -95,6 +106,7 @@ function TaskForm({ task, onSaved, onCancel }: TaskFormProps) {
       }
     } catch (error) {
       console.error(error);
+
       setError(isEditMode ? "Failed to update task" : "Failed to create task");
     } finally {
       setSaving(false);
@@ -104,32 +116,33 @@ function TaskForm({ task, onSaved, onCancel }: TaskFormProps) {
   return (
     <section className="create-task">
       <h2>{isEditMode ? "Edit task" : "Create task"}</h2>
+
       <div>
         <label htmlFor="title">Title</label>
+
         <input
           id="title"
           type="text"
           placeholder="Enter task title..."
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              handleSubmit();
-            }
-          }}
         />
       </div>
+
       <div>
         <label htmlFor="description">Description</label>
+
         <textarea
           id="description"
-          placeholder="Enter task description"
+          placeholder="Enter task description..."
           value={description}
           onChange={(event) => setDescription(event.target.value)}
         />
       </div>
+
       <div>
         <label htmlFor="tags">Tags</label>
+
         <input
           id="tags"
           type="text"
@@ -138,8 +151,10 @@ function TaskForm({ task, onSaved, onCancel }: TaskFormProps) {
           onChange={(event) => setTags(event.target.value)}
         />
       </div>
+
       <div>
         <label htmlFor="deadlineAt">Deadline</label>
+
         <input
           id="deadlineAt"
           type="datetime-local"

@@ -1,76 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import type { Task } from "./types/task";
-import {
-  getTasks,
-  deleteTask as deleteTaskApi,
-  updateTask as updateTaskApi,
-} from "./api/tasksApi";
+import { useTasks } from "./hooks/useTasks";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const {
+    tasks,
+    loading,
+    error,
+    loadTasks,
+    createTask,
+    updateTask,
+    deleteTask,
+    updateTaskStatus,
+  } = useTasks();
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadTasks = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getTasks();
-      setTasks(data);
-    } catch (error) {
-      console.error(error);
-      setError("Failed to load tasks");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  const deleteTask = async (id: number) => {
-    try {
-      await deleteTaskApi(id);
-
-      setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const updateTaskStatus = async (id: number, status: Task["status"]) => {
-    const task = tasks.find((task) => task.id === id);
-
-    if (!task) {
-      return;
-    }
-
-    try {
-      await updateTaskApi(id, {
-        title: task.title,
-        description: task.description,
-        tags: task.tags,
-        status,
-        deadlineAt: task.deadlineAt,
-      });
-
-      setTasks((currentTasks) =>
-        currentTasks.map((currentTask) =>
-          currentTask.id === id ? { ...currentTask, status } : currentTask,
-        ),
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleSaved = async () => {
-    await loadTasks();
     setEditingTask(null);
   };
 
@@ -105,6 +53,8 @@ function App() {
       <main>
         <TaskForm
           task={editingTask ?? undefined}
+          onCreate={createTask}
+          onUpdate={updateTask}
           onSaved={handleSaved}
           onCancel={handleCancelEdit}
         />
