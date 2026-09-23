@@ -10,6 +10,7 @@ function App() {
     tasks,
     loading,
     error,
+    operationError,
     loadTasks,
     createTask,
     updateTask,
@@ -28,6 +29,16 @@ function App() {
 
   const handleCancelEdit = async () => {
     setEditingTask(null);
+  };
+
+  const handleDelete = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this task?",
+    );
+    if (!confirmed) {
+      return;
+    }
+    await deleteTask(id);
   };
 
   if (loading) {
@@ -50,6 +61,10 @@ function App() {
         <p>Manage your tasks</p>
       </header>
 
+      {operationError && (
+        <div className="operation-error">{operationError}</div>
+      )}
+
       <main>
         <TaskForm
           task={editingTask ?? undefined}
@@ -64,7 +79,7 @@ function App() {
 
           <TaskList
             tasks={tasks}
-            onDelete={deleteTask}
+            onDelete={handleDelete}
             onEdit={handleEdit}
             onStatusChange={updateTaskStatus}
           />

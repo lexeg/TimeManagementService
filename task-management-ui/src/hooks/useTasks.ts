@@ -13,6 +13,7 @@ interface UseTasksResult {
   tasks: Task[];
   loading: boolean;
   error: string | null;
+  operationError: string | null;
   loadTasks: () => Promise<void>;
   createTask: (task: CreateTaskRequest) => Promise<void>;
   updateTask: (id: number, task: UpdateTaskRequest) => Promise<void>;
@@ -24,6 +25,7 @@ export function useTasks(): UseTasksResult {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
 
   const loadTasks = async () => {
     try {
@@ -41,36 +43,43 @@ export function useTasks(): UseTasksResult {
 
   const createTask = async (task: CreateTaskRequest) => {
     try {
+      setOperationError(null);
       await createTaskApi(task);
       await loadTasks();
     } catch (error) {
       console.error(error);
+      setOperationError("Failed to create task");
       throw error;
     }
   };
 
   const updateTask = async (id: number, task: UpdateTaskRequest) => {
     try {
+      setOperationError(null);
       await updateTaskApi(id, task);
       await loadTasks();
     } catch (error) {
       console.error(error);
+      setOperationError("Failed to update task");
       throw error;
     }
   };
 
   const deleteTask = async (id: number) => {
     try {
+      setOperationError(null);
       await deleteTaskApi(id);
 
       setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
     } catch (error) {
       console.error(error);
+      setOperationError("Failed to delete task");
       throw error;
     }
   };
 
   const updateTaskStatus = async (id: number, status: Task["status"]) => {
+    setOperationError(null);
     const task = tasks.find((task) => task.id === id);
 
     if (!task) {
@@ -93,6 +102,7 @@ export function useTasks(): UseTasksResult {
       );
     } catch (error) {
       console.error(error);
+      setOperationError("Failed to update task");
       throw error;
     }
   };
@@ -105,6 +115,7 @@ export function useTasks(): UseTasksResult {
     tasks,
     loading,
     error,
+    operationError,
     loadTasks,
     createTask,
     updateTask,
